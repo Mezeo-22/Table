@@ -117,8 +117,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
-                                Log.d("MyLogMain", "createUserWithEmail:success");
                                 FirebaseUser user = mAuth.getCurrentUser();
+                                if(user != null) {
+                                    Toast.makeText(getApplicationContext(), "Sign Up done... user email: " + user.getEmail(), Toast.LENGTH_SHORT).show();
+                                    Log.d("MyLogMain", "createUserWithEmail:success " + user.getEmail());
+                                }
                             } else {
                                 Log.w("MyLogMain", "createUserWithEmail:failure", task.getException());
                                 Toast.makeText(getApplicationContext(), "Authentification failed", Toast.LENGTH_SHORT).show();
@@ -128,5 +131,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else {
             Toast.makeText(this, "Email или Password пустой", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void signin (String email, String password) {
+        mAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            Log.d("MyLogMain", "signInWithEmail:success");
+                        }
+                    }
+                });
     }
 }
