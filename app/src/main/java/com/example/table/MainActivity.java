@@ -30,6 +30,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private NavigationView nav_view;
     private DrawerLayout drawerLayout;
     private FirebaseAuth mAuth;
+    private TextView userEmail;
+    private AlertDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +44,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         nav_view = findViewById(R.id.nav_view);
         drawerLayout = findViewById(R.id.drawerLayout);
         nav_view.setNavigationItemSelectedListener(this);
+        userEmail = nav_view.getHeaderView(0).findViewById(R.id.tvEmail);
         drawerLayout.openDrawer(GravityCompat.START);
 
         mAuth = FirebaseAuth.getInstance();
@@ -50,7 +53,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onStart() {
         super.onStart();
+        getUserData();
+    }
+
+    private void getUserData() {
         FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser != null) {
+            userEmail.setText(currentUser.getEmail());
+        } else {
+            userEmail.setText(R.string.sign_in_or_sign_up);
+        }
     }
 
     @Override
@@ -99,17 +111,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         titleTextView.setText(title);
         Button b = dialogView.findViewById(R.id.buttonSignUp);
         b.setText(buttontitle);
-        b.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (index==0) {
-                    signUp(edEmail.getText().toString(), edPassword.getText().toString());
-                } else {
-                    signin(edEmail.getText().toString(), edPassword.getText().toString());
-                }
+        b.setOnClickListener(v -> {
+            if (index==0) {
+                signUp(edEmail.getText().toString(), edPassword.getText().toString());
+            } else {
+                signin(edEmail.getText().toString(), edPassword.getText().toString());
             }
+            dialog.dismiss();
         });
-        AlertDialog dialog = dialogBuilder.create();
+        dialog = dialogBuilder.create();
         dialog.show();
     }
 
@@ -121,10 +131,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
                                 FirebaseUser user = mAuth.getCurrentUser();
-                                if(user != null) {
-                                    Toast.makeText(getApplicationContext(), "Sign Up done... user email: " + user.getEmail(), Toast.LENGTH_SHORT).show();
-                                    Log.d("MyLogMain", "createUserWithEmail:success " + user.getEmail());
-                                }
+                                getUserData();
                             } else {
                                 Log.w("MyLogMain", "createUserWithEmail:failure", task.getException());
                                 Toast.makeText(getApplicationContext(), "Authentification failed", Toast.LENGTH_SHORT).show();
@@ -145,10 +152,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             if (task.isSuccessful()) {
                                 FirebaseUser user = mAuth.getCurrentUser();
                                 Log.d("MyLogMain", "signInWithEmail:success");
-
-                                if (user != null) {
-                                    Toast.makeText(getApplicationContext(), "SignIn done... user email: " + user.getEmail(), Toast.LENGTH_SHORT).show();
-                                }
+                                getUserData();
                             } else {
                                 Log.w("MyLogmain", "signInWithEmail:failure", task.getException());
                                 Toast.makeText(getApplicationContext(), "Authorization failed", Toast.LENGTH_SHORT).show();
@@ -162,5 +166,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void signOut () {
         mAuth.signOut();
+        getUserData();
     }
 }
