@@ -21,4 +21,7 @@
     <string name="edit_ac_price">Цена</string>
     <string name="edit_ac_discription">Описание</string>
     <string name="edit_ac_phone">Телефон</string>
+
+    <string name="toggle_open">Open</string>
+    <string name="toggle_close">Close</string>
 </resources>
