@@ -130,10 +130,13 @@ public class EditActivity extends AppCompatActivity {
             post.setTel(edTel.getText().toString());
             post.setPrice(edPrice.getText().toString());
             post.setDisc(edDisc.getText().toString());
+            post.setKey(key);
+            post.setTime(String.valueOf(System.nanoTime()));
+            post.setUid(mAuth.getUid());
 
             Log.d("Проверка", ""+post);
 
-            if(key != null)dRef.child(mAuth.getUid()).child(key).setValue(post);
+            if(key != null)dRef.child(key).child("ad").setValue(post);
         }
     }
 }

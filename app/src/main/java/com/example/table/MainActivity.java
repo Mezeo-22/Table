@@ -60,24 +60,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         rcView = findViewById(R.id.rcView);
         rcView.setLayoutManager(new LinearLayoutManager(this));
 
-        //test
-        List<NewPost> arrayTestPost = new ArrayList<>();
-        NewPost newPost = new NewPost();
-        newPost.setTitle("title");
-        newPost.setTel("8999");
-        newPost.setPrice("100");
-        newPost.setDisc("description");
-        arrayTestPost.add(newPost);
-        arrayTestPost.add(newPost);
-        arrayTestPost.add(newPost);
-        arrayTestPost.add(newPost);
-        arrayTestPost.add(newPost);
-        arrayTestPost.add(newPost);
-        arrayTestPost.add(newPost);
-        arrayTestPost.add(newPost);
-        //test
+        List<NewPost> arrayPost = new ArrayList<>();
 
-        postAdapter = new PostAdapter(arrayTestPost, this, onItemClickCustom);
+        postAdapter = new PostAdapter(arrayPost, this, onItemClickCustom);
         rcView.setAdapter(postAdapter);
 
         fb = findViewById(R.id.floatingActionButton2);

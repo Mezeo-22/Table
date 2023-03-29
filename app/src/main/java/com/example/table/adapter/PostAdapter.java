@@ -76,4 +76,9 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolderData
     public interface OnItemClickCustom {
         public void onItemSelected(int position);
     }
+
+    public void updateAdapter(List<NewPost> listData) {
+        arrayPost.clear();
+        arrayPost.addAll(listData);
+    }
 }
