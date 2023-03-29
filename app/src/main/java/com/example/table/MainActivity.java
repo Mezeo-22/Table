@@ -21,6 +21,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.table.adapter.DataSender;
 import com.example.table.adapter.PostAdapter;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -33,6 +34,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -47,6 +49,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private PostAdapter.OnItemClickCustom onItemClickCustom;
     private RecyclerView rcView;
     private PostAdapter postAdapter;
+    private DataSender dataSender;
+    private DBManager dbManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,6 +86,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         userEmail = nav_view.getHeaderView(0).findViewById(R.id.tvEmail);
 
         mAuth = FirebaseAuth.getInstance();
+
+        //Test
+        getDataDB();
+        dbManager = new DBManager(dataSender);
+        dbManager.getDataFromDb("Машины");
+    }
+
+    private void getDataDB() {
+        dataSender = new DataSender() {
+            @Override
+            public void onDataRecived(List<NewPost> listData) {
+                Collections.reverse(listData);
+                postAdapter.updateAdapter(listData);
+            }
+        };
     }
 
     private void setOnItemClickCustom() {
@@ -118,31 +137,28 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int id = item.getItemId();
         switch (id) {
             case R.id.id_my_ads:
-                Toast.makeText(this, "Pressed id my ads", Toast.LENGTH_SHORT).show();
+                dbManager.getMyDataFromDb(mAuth.getUid());
                 break;
             case R.id.id_cars_ads:
-                Toast.makeText(this, "Pressed id cars ads", Toast.LENGTH_SHORT).show();
+                dbManager.getDataFromDb("Машины");
                 break;
             case R.id.id_pc_ads:
-                Toast.makeText(this, "Pressed id pc ads", Toast.LENGTH_SHORT).show();
+                dbManager.getDataFromDb("Компьютеры");
                 break;
             case R.id.id_smartphone_ads:
-                Toast.makeText(this, "Pressed id smartphone ads", Toast.LENGTH_SHORT).show();
+                dbManager.getDataFromDb("Смартфоны");
                 break;
             case R.id.id_dm_ads:
-                Toast.makeText(this, "Pressed id dm ads", Toast.LENGTH_SHORT).show();
+                dbManager.getDataFromDb("Бытовая техника");
                 break;
             case R.id.id_sign_up:
                 signupdialog(R.string.sign_up, R.string.sign_up_button, 0);
-                Toast.makeText(this, "Pressed id sign up", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.id_sign_in:
                 signupdialog(R.string.sign_in, R.string.sign_in_button, 1);
-                Toast.makeText(this, "Pressed id sign in", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.id_sign_out:
                 signOut();
-                Toast.makeText(this, "Pressed id sign out", Toast.LENGTH_SHORT).show();
                 break;
         }
         return true;

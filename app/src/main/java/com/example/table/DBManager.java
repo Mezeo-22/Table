@@ -21,17 +21,28 @@ public class DBManager {
     private Query mQuery;
     private List<NewPost> newPostList;
     private DataSender dataSender;
+    private FirebaseDatabase db;
+    private int category_ads_counter = 0;
+    private String[] catedory_ads = {"Машины", "Компьютеры", "Смартфоны", "Бытовая техника"};
 
     public DBManager(DataSender dataSender) {
         this.dataSender = dataSender;
         newPostList = new ArrayList<>();
+        db = FirebaseDatabase.getInstance();
     }
 
     public void getDataFromDb(String path) {
-        FirebaseDatabase db = FirebaseDatabase.getInstance();
         DatabaseReference dRef = db.getReference(path);
         mQuery = dRef.orderByChild("ad/time");
         readDataUpdate();
+    }
+
+    public void getMyDataFromDb(String uid) {
+        if(newPostList.size()>0)newPostList.clear();
+        DatabaseReference dbRef = db.getReference(catedory_ads[0]);
+        mQuery = dbRef.orderByChild("ad/uid").equalTo(uid);
+        readMyAdsDataUpdate(uid);
+        category_ads_counter++;
     }
 
     public void readDataUpdate() {
@@ -44,6 +55,33 @@ public class DBManager {
                     newPostList.add(newPost);
                 }
                 dataSender.onDataRecived(newPostList);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    public void readMyAdsDataUpdate(final String uid) {
+        mQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot ds : snapshot.getChildren()) {
+                    NewPost newPost = ds.child("ad").getValue(NewPost.class);
+                    newPostList.add(newPost);
+                }
+                if(category_ads_counter > 3) {
+                    dataSender.onDataRecived(newPostList);
+                    newPostList.clear();
+                    category_ads_counter = 0;
+                } else {
+                    DatabaseReference dRef = db.getReference(catedory_ads[category_ads_counter]);
+                    mQuery = dRef.orderByChild("ad/uid").equalTo(uid);
+                    readMyAdsDataUpdate(uid);
+                    category_ads_counter++;
+                }
             }
 
             @Override

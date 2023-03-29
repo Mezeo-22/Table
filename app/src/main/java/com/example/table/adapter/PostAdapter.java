@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.table.NewPost;
 import com.example.table.R;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -62,9 +63,11 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolderData
         }
 
         public void setData(NewPost newPost) {
+            Picasso.get().load(newPost.getImageId()).into(imAds);
             tvTitle.setText(newPost.getTitle());
             String price_tel = "Цена: " + newPost.getPrice() + ", Тел: " + newPost.getTel();
             tvPriceTel.setText(price_tel);
+            tvDisc.setText(newPost.getDisc());
         }
 
         @Override
@@ -80,5 +83,6 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolderData
     public void updateAdapter(List<NewPost> listData) {
         arrayPost.clear();
         arrayPost.addAll(listData);
+        notifyDataSetChanged();
     }
 }
