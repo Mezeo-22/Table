@@ -2,6 +2,7 @@ package com.example.table.adapter;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,9 +17,11 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.table.DBManager;
+import com.example.table.EditActivity;
 import com.example.table.MainActivity;
 import com.example.table.NewPost;
 import com.example.table.R;
+import com.example.table.utils.MyConstants;
 import com.squareup.picasso.Picasso;
 
 import java.util.List;
@@ -59,7 +62,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolderData
         private ImageView imAds;
         private LinearLayout editLayout;
         private OnItemClickCustom onItemClickCustom;
-        private ImageButton deleteButton;
+        private ImageButton deleteButton, editButton;
 
         public ViewHolderData(@NonNull View itemView, OnItemClickCustom onItemClickCustom) {
             super(itemView);
@@ -69,6 +72,7 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolderData
             imAds = itemView.findViewById(R.id.imAds);
             editLayout = itemView.findViewById(R.id.editLayout);
             deleteButton = itemView.findViewById(R.id.imDeleteItem);
+            editButton = itemView.findViewById(R.id.imEditItem);
             onItemClickCustom = onItemClickCustom;
 
             itemView.setOnClickListener(this);
@@ -98,6 +102,24 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.ViewHolderData
                 @Override
                 public void onClick(View view) {
                     deleteDialog(newPost, getAdapterPosition());
+                }
+            });
+
+            editButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Intent i = new Intent(context, EditActivity.class);
+                    i.putExtra(MyConstants.IMAGE_ID, newPost.getImageId());
+                    i.putExtra(MyConstants.TITLE, newPost.getTitle());
+                    i.putExtra(MyConstants.PRICE, newPost.getPrice());
+                    i.putExtra(MyConstants.CAT, newPost.getCat());
+                    i.putExtra(MyConstants.DISC, newPost.getDisc());
+                    i.putExtra(MyConstants.KEY, newPost.getKey());
+                    i.putExtra(MyConstants.TEL, newPost.getTel());
+                    i.putExtra(MyConstants.UID, newPost.getUid());
+                    i.putExtra(MyConstants.TIME, newPost.getTime());
+                    i.putExtra(MyConstants.EDIT_STATE, true);
+                    context.startActivity(i);
                 }
             });
         }
