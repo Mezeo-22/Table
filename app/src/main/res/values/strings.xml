@@ -24,4 +24,11 @@
 
     <string name="toggle_open">Open</string>
     <string name="toggle_close">Close</string>
+
+    <!-- PostAdapter -->
+
+    <string name="delete_title">Удалить объявление?</string>
+    <string name="delete_message">Вы действительно хотите удалить объявление?</string>
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
 </resources>

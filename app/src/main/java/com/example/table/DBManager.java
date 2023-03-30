@@ -1,11 +1,15 @@
 package com.example.table;
 
+import android.content.Context;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.example.table.adapter.DataSender;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -13,22 +17,54 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class DBManager {
+    private Context context;
     private Query mQuery;
     private List<NewPost> newPostList;
     private DataSender dataSender;
     private FirebaseDatabase db;
+    private FirebaseStorage fs;
     private int category_ads_counter = 0;
     private String[] catedory_ads = {"Машины", "Компьютеры", "Смартфоны", "Бытовая техника"};
 
-    public DBManager(DataSender dataSender) {
+    public void deleteItem(final NewPost newPost) {
+        StorageReference sRef = fs.getReferenceFromUrl(newPost.getImageId());
+        sRef.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void unused) {
+                DatabaseReference dbRef = db.getReference(newPost.getCat());
+                dbRef.child(newPost.getKey()).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void unused) {
+                        Toast.makeText(context, "Объявление удалено.", Toast.LENGTH_SHORT).show();
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(context, "Ошибка. Объявление не удалено.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(context, "Ошибка. Изображение не удалено.", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    public DBManager(DataSender dataSender, Context context) {
         this.dataSender = dataSender;
+        this.context = context;
         newPostList = new ArrayList<>();
         db = FirebaseDatabase.getInstance();
+        fs = FirebaseStorage.getInstance();
     }
 
     public void getDataFromDb(String path) {
