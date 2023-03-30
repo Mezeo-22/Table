@@ -52,12 +52,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private DataSender dataSender;
     private DBManager dbManager;
     public static String MAUTH = "";
+    private String curr_cat = "Машины";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         init();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(curr_cat.equals("My ads")) {
+            dbManager.getMyDataFromDb(mAuth.getUid());
+        } else {
+            dbManager.getDataFromDb(curr_cat);
+        }
     }
 
     private void init() {
@@ -91,7 +102,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         //Test
         getDataDB();
         dbManager = new DBManager(dataSender, this);
-        dbManager.getDataFromDb("Машины");
         postAdapter.setDbManager(dbManager);
     }
 
@@ -141,18 +151,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int id = item.getItemId();
         switch (id) {
             case R.id.id_my_ads:
+                curr_cat = "My ads";
                 dbManager.getMyDataFromDb(mAuth.getUid());
                 break;
             case R.id.id_cars_ads:
+                curr_cat = "Машины";
                 dbManager.getDataFromDb("Машины");
                 break;
             case R.id.id_pc_ads:
+                curr_cat = "Компьютеры";
                 dbManager.getDataFromDb("Компьютеры");
                 break;
             case R.id.id_smartphone_ads:
+                curr_cat = "Смартфоны";
                 dbManager.getDataFromDb("Смартфоны");
                 break;
             case R.id.id_dm_ads:
+                curr_cat = "Бытовая техника";
                 dbManager.getDataFromDb("Бытовая техника");
                 break;
             case R.id.id_sign_up:

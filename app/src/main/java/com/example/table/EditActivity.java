@@ -83,6 +83,7 @@ public class EditActivity extends AppCompatActivity {
                     updatePost();
                 }
             }
+            finish();
         });
         getMyIntent();
     }
